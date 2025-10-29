@@ -1,8 +1,11 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+
 
 namespace Workplace.Tasks.Api.Models
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))] //aceita string sem precisar 0, 1, 2
     public enum TaskStatus
     {
         Pending,
