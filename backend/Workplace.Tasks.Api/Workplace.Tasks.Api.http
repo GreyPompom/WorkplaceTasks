@@ -1,0 +1,6 @@
+@Workplace.Tasks.Api_HostAddress = http://localhost:5255
+
+GET {{Workplace.Tasks.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,109 @@
+##############################
+# .NET / ASP.NET Core
+##############################
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.vs/
+*.vscode/
+*.launchSettings.json
+
+# Entity Framework
+Migrations/
+!**/Migrations/*.cs
+!**/Migrations/*.Designer.cs
+
+# Configuration
+appsettings.*.json
+!appsettings.Development.json
+.env
+.env.*
+.envrc
+*.secrets.json
+
+# Build and Publish folders
+**/publish/
+**/PublishProfiles/
+
+# Logs
+*.log
+logs/
+**/logs/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.DS_Store
+Thumbs.db
+ehthumbs.db
+*.dbmdl
+
+##############################
+# Angular / Node.js frontend
+##############################
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.sass-cache/
+frontend/.cache/
+frontend/package-lock.json
+frontend/yarn.lock
+
+##############################
+# Docker
+##############################
+docker-compose.override.yml
+docker-compose.debug.yml
+**/Dockerfile.development
+**/Dockerfile.debug
+**/.docker/
+**/tmp/
+**/volumes/
+
+##############################
+# IDE / Editor configs
+##############################
+.vscode/
+.idea/
+*.code-workspace
+
+##############################
+# OS-specific
+##############################
+.DS_Store
+Thumbs.db
+desktop.ini
+
+##############################
+# Test artifacts
+##############################
+TestResults/
+coverage/
+coverage.json
+coverage.lcov
+*.coverage
+*.coveragexml
+
+##############################
+# Tools / Cache
+##############################
+.nuget/
+**/packages/
+**/obj/Release/net*/
+**/obj/Debug/net*/
+*.nupkg
+*.snupkg
+*.bak
+*.orig
+
+##############################
+# Miscellaneous
+##############################
+**/*.local.json
+**/*.env.json
+**/appsettings.Secret.json
