@@ -9,6 +9,8 @@ using Workplace.Tasks.Api.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Workplace.Tasks.Api.Middlewares;
+using Microsoft.AspNetCore.Authorization;
+using Workplace.Tasks.Api.Authorization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +31,7 @@ builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
+builder.Services.AddScoped<IAuthorizationHandler, OwnsTaskHandler>();
 
 // Configuração JWT
 var jwtKey = builder.Configuration["Jwt:Key"];
@@ -51,9 +54,48 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = false
     };
 });
+
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("CanManageAll", policy =>
+//        policy.RequireRole("Admin"));
+
+//    options.AddPolicy("CanManageTasks", policy =>
+//        policy.RequireRole("Admin", "Manager"));
+
+//    options.AddPolicy("CanDeleteOwn", policy =>
+//        policy.Requirements.Add(new OwnsTaskRequirement()));
+
+//    options.AddPolicy("CanEditOwn", policy =>
+//        policy.Requirements.Add(new OwnsTaskRequirement()));
+//});
+builder.Services.AddAuthorization(options =>
+{
+    // adm tudo liberado
+    options.AddPolicy("AdminPolicy", policy =>
+        policy.RequireRole("Admin"));
+
+    // mamager, exceto deletar alheios
+    options.AddPolicy("ManagerPolicy", policy =>
+        policy.RequireRole("Admin", "Manager"));
+
+    // member crud apenas próprios
+    options.AddPolicy("MemberPolicy", policy =>
+        policy.RequireRole("Member"));
+
+    //  usada junto com outros policies
+    options.AddPolicy("OwnsTask", policy =>
+        policy.Requirements.Add(new OwnsTaskRequirement()));
+});
+
+//Melhoria: alterar de RBAC (Controle de Acesso Baseado em Função) e para ABAC (Controle de Acesso Baseado em Atributo) 
+//RBAC é binario e estatico — ele responde apenas tem ou nao tem.
+//e na pratica e em projetos escalaveis as autorizações dependem do contexto
+
 var app = builder.Build();
 
 //tratar erros
+app.UseMiddleware<ModelStateValidationMiddleware>();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 // configure the http request pipeline.
@@ -64,6 +106,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseModelStateValidation();
 app.UseAuthentication();
 app.UseAuthorization();
 

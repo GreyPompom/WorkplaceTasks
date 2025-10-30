@@ -29,7 +29,7 @@ namespace Workplace.Tasks.Api.Controllers
 
         // GET /api/tasks - Regra: Todos (Admin, Manager, Member) podem listar
         [HttpGet]
-        [Authorize(Roles = "Admin,Manager,Member")]
+        [Authorize(Policy = "ManagerPolicy")]
         public async Task<IActionResult> GetAll()
         {
             var tasks = await _taskService.GetAllAsync();
@@ -48,7 +48,7 @@ namespace Workplace.Tasks.Api.Controllers
 
         // GET /api/tasks/{id}  - Regra: Todos (Admin, Manager, Member) podem listar
         [HttpGet("{id:guid}")] 
-        [Authorize(Roles = "Admin,Manager,Member")]
+        [Authorize(Policy = "ManagerPolicy")] 
         public async Task<IActionResult> GetById(Guid id)
         {
             var task = await _taskService.GetByIdAsync(id)
@@ -59,7 +59,7 @@ namespace Workplace.Tasks.Api.Controllers
 
         // POST /api/tasks - todos
         [HttpPost]
-        [Authorize(Roles = "Admin,Manager,Member")]
+        [Authorize(Policy = "ManagerPolicy")]
         public async Task<IActionResult> Create([FromBody] TaskCreateDto dto)
         {
             var userId = GetUserId();
@@ -89,6 +89,7 @@ namespace Workplace.Tasks.Api.Controllers
 
         //  PUT /api/tasks/{id} - todos, mas member que so pode editar as proprias
         [HttpPut("{id:guid}")]
+        [Authorize(Policy = "OwnsTask")]
         public async Task<IActionResult> Update(Guid id, [FromBody] TaskUpdateDto dto)
         {
             var userId = GetUserId();
@@ -98,7 +99,7 @@ namespace Workplace.Tasks.Api.Controllers
                            ?? throw new KeyNotFoundException("Tarefa não encontrada.");
 
             if (role == "Member" && existing.CreatedById != userId)
-                throw new UnauthorizedAccessException("Member pode editar apenas tarefas que criou");
+                return Forbid();
 
             existing.Title = dto.Title;
             existing.Description = dto.Description;
@@ -123,7 +124,7 @@ namespace Workplace.Tasks.Api.Controllers
 
         // DELETE /api/tasks/{id} - todos, mas member e manager so pode deletar as proprias
         [HttpDelete("{id:guid}")]
-        [Authorize(Roles = "Admin,Manager,Member")]
+        [Authorize(Policy = "OwnsTask")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var userId = GetUserId();
@@ -134,15 +135,15 @@ namespace Workplace.Tasks.Api.Controllers
 
             //regra para member e manager
             if (role == "Member" && existing.CreatedById != userId)
-                throw new UnauthorizedAccessException("Member pode excluir apenas suas próprias tarefas.");
-                
+                return Forbid();
+
             if (role == "Manager" && existing.CreatedById != userId)
-                return new UnauthorizedAccessException("Você só pode excluir suas próprias tarefas.");
+                return Forbid();
 
             await _taskService.DeleteAsync(id);
             return NoContent();
         }
-       
-   
+
+        
     }
 }
