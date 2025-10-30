@@ -39,7 +39,11 @@ builder.Services.AddSwaggerGen(options =>
             Name = "Authorization",
             In = ParameterLocation.Header,
             Type = SecuritySchemeType.Http,
-            Description = "Insira o token JWT no formato: **Bearer {seu_token}**",
+            Description = @"API de gerenciamento de tarefas com autenticação JWT e RBAC.<br/><br/>
+            <b>Usuários padrão (seed):</b><br/>
+             <b>Admin:</b> admin@example.com / Password123!<br/>
+             <b>Manager:</b> manager@example.com / Password123!<br/>
+             <b>Member:</b> member@example.com / Password123!",
 
             Reference = new OpenApiReference
             {
@@ -133,6 +137,14 @@ builder.Services.AddAuthorization(options =>
 //e na pratica e em projetos escalaveis as autorizações dependem do contexto
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    context.Database.EnsureCreated(); // Cria DB se não existir
+    DbInitializer.Seed(context);
+}
 
 //tratar erros
 app.UseMiddleware<ModelStateValidationMiddleware>();
