@@ -11,7 +11,7 @@ namespace Workplace.Tasks.Api.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class TasksController : ControllerBase
+    public class TasksController : BaseController
     {
         private readonly ITaskService _taskService;
         private readonly IUserService _userService;
@@ -27,8 +27,9 @@ namespace Workplace.Tasks.Api.Controllers
             _userService = userService;
         }
 
-        // GET /api/tasks
+        // GET /api/tasks - Regra: Todos (Admin, Manager, Member) podem listar
         [HttpGet]
+        [Authorize(Roles = "Admin,Manager,Member")]
         public async Task<IActionResult> GetAll()
         {
             var tasks = await _taskService.GetAllAsync();
@@ -45,21 +46,24 @@ namespace Workplace.Tasks.Api.Controllers
             return Ok(response);
         }
 
-        // POST /api/tasks
+        // GET /api/tasks/{id}  - Regra: Todos (Admin, Manager, Member) podem listar
+        [HttpGet("{id:guid}")] 
+        [Authorize(Roles = "Admin,Manager,Member")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var task = await _taskService.GetByIdAsync(id)
+                       ?? throw new KeyNotFoundException("Tarefa não encontrada.");
+
+            return Ok(task);
+        }
+
+        // POST /api/tasks - todos
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager,Member")]
         public async Task<IActionResult> Create([FromBody] TaskCreateDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Title))
-                return BadRequest("O título é obrigatório.");
-
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                              ?? User.FindFirst(ClaimTypes.Name)?.Value
-                              ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (!Guid.TryParse(userIdClaim, out var userId))
-                return Unauthorized("Token inválido — ID de usuário não encontrado.");
-
-            var task = new TaskEntity
+            var userId = GetUserId();
+            var newTask = new TaskEntity
             {
                 Title = dto.Title,
                 Description = dto.Description,
@@ -67,7 +71,7 @@ namespace Workplace.Tasks.Api.Controllers
                 CreatedById = userId
             };
 
-            var createdTask = await _taskService.CreateAsync(task);
+            var createdTask = await _taskService.CreateAsync(newTask);
 
             var response = new TaskResponseDto
             {
@@ -82,37 +86,28 @@ namespace Workplace.Tasks.Api.Controllers
             return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
         }
 
-        //  GET /api/tasks/{id}
-        [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            var task = await _taskService.GetByIdAsync(id);
-            if (task == null)
-                return NotFound();
 
-            return Ok(task);
-        }
-
-        //  PUT /api/tasks/{id}
+        //  PUT /api/tasks/{id} - todos, mas member que so pode editar as proprias
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] TaskUpdateDto dto)
         {
-            var userId = GetUserIdFromClaims();
-            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = GetUserId();
+            var role = GetUserRole();
 
             var existing = await _taskService.GetByIdAsync(id)
                            ?? throw new KeyNotFoundException("Tarefa não encontrada.");
 
             if (role == "Member" && existing.CreatedById != userId)
-                throw new UnauthorizedAccessException("Você só pode editar tarefas criadas por você.");
+                throw new UnauthorizedAccessException("Member pode editar apenas tarefas que criou");
 
             existing.Title = dto.Title;
             existing.Description = dto.Description;
             existing.Status = dto.Status;
+            existing.UpdatedAt = DateTime.UtcNow;
 
             var result = await _taskService.UpdateAsync(existing);
 
-            //criar metodo ToReponse
+            //Melhoria criar metodo ToReponse
             var response = new TaskResponseDto
             {
                 Id = result.Id,
@@ -126,27 +121,28 @@ namespace Workplace.Tasks.Api.Controllers
             return Ok(response);
         }
 
-        // DELETE /api/tasks/{id}
+        // DELETE /api/tasks/{id} - todos, mas member e manager so pode deletar as proprias
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin,Manager,Member")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var existing = await _taskService.GetByIdAsync(id);
-            if (existing == null)
-                return NotFound();
+            var userId = GetUserId();
+            var role = GetUserRole();
 
-            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                              ?? User.FindFirst(ClaimTypes.Name)?.Value;
-            Guid.TryParse(userIdClaim, out var userId);
+            var existing = await _taskService.GetByIdAsync(id)
+                            ?? throw new KeyNotFoundException("Tarefa não encontrada.");
 
-            if (userRole == "Member" && existing.CreatedById != userId)
-                return Forbid("Você só pode excluir tarefas que criou.");
-
-            if (userRole == "Manager" && existing.CreatedById != userId)
-                return Forbid("Managers só podem excluir tarefas criadas por eles.");
+            //regra para member e manager
+            if (role == "Member" && existing.CreatedById != userId)
+                throw new UnauthorizedAccessException("Member pode excluir apenas suas próprias tarefas.");
+                
+            if (role == "Manager" && existing.CreatedById != userId)
+                return new UnauthorizedAccessException("Você só pode excluir suas próprias tarefas.");
 
             await _taskService.DeleteAsync(id);
             return NoContent();
         }
+       
+   
     }
 }
