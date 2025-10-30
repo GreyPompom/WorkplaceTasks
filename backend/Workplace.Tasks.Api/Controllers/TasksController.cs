@@ -97,18 +97,14 @@ namespace Workplace.Tasks.Api.Controllers
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] TaskUpdateDto dto)
         {
-            var existing = await _taskService.GetByIdAsync(id);
-            if (existing == null)
-                return NotFound("message Tarefa não localizada.");
+            var userId = GetUserIdFromClaims();
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
 
-            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                              ?? User.FindFirst(ClaimTypes.Name)?.Value;
-            Guid.TryParse(userIdClaim, out var userId);
+            var existing = await _taskService.GetByIdAsync(id)
+                           ?? throw new KeyNotFoundException("Tarefa não encontrada.");
 
-            // RBAC: Admin = tudo; Manager = tudo exceto deletar não próprias; Member = apenas próprias
-            if (userRole == "Member" && existing.CreatedById != userId)
-                return Forbid("Você só pode editar tarefas que criou.");
+            if (role == "Member" && existing.CreatedById != userId)
+                throw new UnauthorizedAccessException("Você só pode editar tarefas criadas por você.");
 
             existing.Title = dto.Title;
             existing.Description = dto.Description;

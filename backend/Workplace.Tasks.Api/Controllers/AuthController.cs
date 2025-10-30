@@ -27,8 +27,7 @@ namespace Workplace.Tasks.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto dto)
         {
-            try
-            {
+           
                 var user = await _userService.RegisterAsync(dto);
 
                 // gera token 
@@ -69,23 +68,14 @@ namespace Workplace.Tasks.Api.Controllers
                 };
 
                 return Ok(response);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Erro interno ao registrar usuário.", details = ex.Message });
-            }
+           
         }
 
 
         [HttpPost("token")]
         public async Task<IActionResult> Token([FromBody] LoginRequestDto dto)
         {
-            try
-            {
+           
                 var user = await _userService.ValidateCredentialsAsync(dto.Email, dto.Password);
 
                 if (user == null)
@@ -132,22 +122,7 @@ namespace Workplace.Tasks.Api.Controllers
                 };
 
                 return Ok(response);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                // dados inválidas
-                return Unauthorized(new { message = ex.Message });
-            }
-            catch (InvalidOperationException ex)
-            {
-                // estado inconsistente
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                // fallback seguro para qualquer exceção inesperada
-                return StatusCode(500, new { message = "Erro interno no servidor.", details = ex.Message });
-            }
+           
         }
 
     }
