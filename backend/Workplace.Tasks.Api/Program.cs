@@ -1,17 +1,19 @@
+using Workplace.Tasks.Api.Authorization;
 using Workplace.Tasks.Api.Data;
 using Workplace.Tasks.Api.Repositories;
 using Workplace.Tasks.Api.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
+using Workplace.Tasks.Api.Middlewares;
 using Workplace.Tasks.Api.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Workplace.Tasks.Api.Middlewares;
-using Microsoft.AspNetCore.Authorization;
-using Workplace.Tasks.Api.Authorization;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+
+using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +21,45 @@ builder.Services.AddControllers()
     .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Program>());
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+
+builder.Services.AddSwaggerGen(options =>
+    {
+        options.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "BIM Workplace Tasks API - teste tecnico",
+            Version = "v1",
+            Description = "API para gerenciamento de tarefas com autenticação JWT e RBAC"
+        });
+
+        var jwtSecurityScheme = new OpenApiSecurityScheme
+        {
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.Http,
+            Description = "Insira o token JWT no formato: **Bearer {seu_token}**",
+
+            Reference = new OpenApiReference
+            {
+                Id = JwtBearerDefaults.AuthenticationScheme,
+                Type = ReferenceType.SecurityScheme
+            }
+        };
+
+        options.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+
+        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                jwtSecurityScheme,
+                Array.Empty<string>()
+            }
+        });
+    });
+
+
 
 //conexão banco
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -102,7 +142,12 @@ app.UseMiddleware<ErrorHandlingMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Workplace Tasks API v1");
+        options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+        options.DisplayRequestDuration();
+    });
 }
 
 app.UseHttpsRedirection();
