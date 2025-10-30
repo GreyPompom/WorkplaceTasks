@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Workplace.Tasks.Api.Models;
 using Workplace.Tasks.Api.Services;
+using Workplace.Tasks.Api.DTOs.Auth;
+using Workplace.Tasks.Api.DTOs;
 
 namespace Workplace.Tasks.Api.Controllers
 {
@@ -22,60 +25,130 @@ namespace Workplace.Tasks.Api.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDto dto)
         {
-            var existingUser = await _userService.GetByEmailAsync(request.Email);
-            if (existingUser != null)
-                return BadRequest("E-mail já cadastrado.");
-
-            var newUser = new User
+            try
             {
-                Name = request.Name,
-                Email = request.Email,
-                Role = request.Role
-            };
+                var user = await _userService.RegisterAsync(dto);
 
-            await _userService.CreateAsync(newUser, request.Password);
-            return Ok(new { message = "Usuário registrado com sucesso!" });
+                // gera token 
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var secretKey = _configuration["Jwt:Key"];
+                var key = Encoding.UTF8.GetBytes(secretKey ?? throw new InvalidOperationException("Chave JWT não configurada."));
+
+                var claims = new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Role, user.Role),
+                    new Claim(ClaimTypes.Name, user.Name)
+                };
+
+                var creds = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
+
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(claims),
+                    Expires = DateTime.UtcNow.AddHours(3),
+                    SigningCredentials = creds
+                };
+
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                var jwt = tokenHandler.WriteToken(token);
+
+                var response = new AuthResponseDto
+                {
+                    Token = jwt,
+                    User = new UserDto
+                    {
+                        Id = user.Id,
+                        Name = user.Name,
+                        Email = user.Email,
+                        Role = user.Role
+                    }
+                };
+
+                return Ok(response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro interno ao registrar usuário.", details = ex.Message });
+            }
         }
+
 
         [HttpPost("token")]
-        public async Task<IActionResult> Token([FromBody] LoginRequest request)
+        public async Task<IActionResult> Token([FromBody] LoginRequestDto dto)
         {
-            var isValid = await _userService.ValidateCredentialsAsync(request.Email, request.Password);
-            if (!isValid)
-                return Unauthorized("Credenciais inválidas.");
-
-            var user = await _userService.GetByEmailAsync(request.Email);
-            if (user == null)
-                return Unauthorized();
-
-            var claims = new[]
+            try
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role),
-                new Claim("name", user.Name)
-            };
+                var user = await _userService.ValidateCredentialsAsync(dto.Email, dto.Password);
 
-            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                if (user == null)
+                    throw new UnauthorizedAccessException("Email ou senha inválidos.");
 
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(8),
-                signingCredentials: creds);
+                // cria a chave jwt
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var secretKey = _configuration["Jwt:Key"];
+                var key = Encoding.UTF8.GetBytes(secretKey ?? throw new InvalidOperationException("Chave JWT não configurada."));
 
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+                var claims = new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Role, user.Role),
+                    new Claim(ClaimTypes.Name, user.Name)
+                };
 
-            return Ok(new
+                var creds = new SigningCredentials(
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256
+                );
+
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(claims),
+                    Expires = DateTime.UtcNow.AddHours(3),
+                    SigningCredentials = creds
+                };
+
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                var jwt = tokenHandler.WriteToken(token);
+
+                var response = new AuthResponseDto
+                {
+                    Token = jwt,
+                    User = new UserDto
+                    {
+                        Id = user.Id,
+                        Name = user.Name,
+                        Email = user.Email,
+                        Role = user.Role
+                    }
+                };
+
+                return Ok(response);
+            }
+            catch (UnauthorizedAccessException ex)
             {
-                token = tokenString,
-                user = new { user.Id, user.Name, user.Email, user.Role }
-            });
+                // dados inválidas
+                return Unauthorized(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                // estado inconsistente
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                // fallback seguro para qualquer exceção inesperada
+                return StatusCode(500, new { message = "Erro interno no servidor.", details = ex.Message });
+            }
         }
-    }
 
-    public record RegisterRequest(string Name, string Email, string Password, string Role);
-    public record LoginRequest(string Email, string Password);
+    }
 }

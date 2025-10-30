@@ -1,18 +1,11 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-
+using Workplace.Tasks.Api.Models.Enum;
 
 namespace Workplace.Tasks.Api.Models
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))] //aceita string sem precisar 0, 1, 2
-    public enum TaskStatus
-    {
-        Pending,
-        InProgress,
-        Done
-    }
-
+ 
     public class TaskEntity
     {
         [Key]
@@ -26,7 +19,7 @@ namespace Workplace.Tasks.Api.Models
         public string? Description { get; set; }
 
         [Required]
-        public TaskStatus Status { get; set; } = TaskStatus.Pending;
+        public EnumTaskStatus Status { get; set; } = EnumTaskStatus.Pending;
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

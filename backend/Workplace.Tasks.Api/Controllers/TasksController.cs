@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Workplace.Tasks.Api.DTOs;
 using Workplace.Tasks.Api.Models;
 using Workplace.Tasks.Api.Services;
+
 
 namespace Workplace.Tasks.Api.Controllers
 {
@@ -30,14 +32,24 @@ namespace Workplace.Tasks.Api.Controllers
         public async Task<IActionResult> GetAll()
         {
             var tasks = await _taskService.GetAllAsync();
-            return Ok(tasks);
+            var response = tasks.Select(tasks => new TaskResponseDto
+            {
+                Id = tasks.Id,
+                Title = tasks.Title,
+                Description = tasks.Description,
+                Status = tasks.Status,
+                CreatedAt = tasks.CreatedAt,
+                UpdatedAt = tasks.UpdatedAt,
+                CreatedById = tasks.CreatedById
+            });
+            return Ok(response);
         }
 
         // POST /api/tasks
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] TaskEntity task)
+        public async Task<IActionResult> Create([FromBody] TaskCreateDto dto)
         {
-            if (string.IsNullOrWhiteSpace(task.Title))
+            if (string.IsNullOrWhiteSpace(dto.Title))
                 return BadRequest("O título é obrigatório.");
 
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
@@ -47,10 +59,27 @@ namespace Workplace.Tasks.Api.Controllers
             if (!Guid.TryParse(userIdClaim, out var userId))
                 return Unauthorized("Token inválido — ID de usuário não encontrado.");
 
-            task.CreatedById = userId;
+            var task = new TaskEntity
+            {
+                Title = dto.Title,
+                Description = dto.Description,
+                Status = dto.Status,
+                CreatedById = userId
+            };
 
             var createdTask = await _taskService.CreateAsync(task);
-            return CreatedAtAction(nameof(GetById), new { id = createdTask.Id }, createdTask);
+
+            var response = new TaskResponseDto
+            {
+                Id = createdTask.Id,
+                Title = createdTask.Title,
+                Description = createdTask.Description,
+                Status = createdTask.Status,
+                CreatedAt = createdTask.CreatedAt,
+                UpdatedAt = createdTask.UpdatedAt,
+                CreatedById = createdTask.CreatedById
+            };
+            return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
         }
 
         //  GET /api/tasks/{id}
@@ -66,11 +95,11 @@ namespace Workplace.Tasks.Api.Controllers
 
         //  PUT /api/tasks/{id}
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] TaskEntity updatedTask)
+        public async Task<IActionResult> Update(Guid id, [FromBody] TaskUpdateDto dto)
         {
             var existing = await _taskService.GetByIdAsync(id);
             if (existing == null)
-                return NotFound();
+                return NotFound("message Tarefa não localizada.");
 
             var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
@@ -81,13 +110,24 @@ namespace Workplace.Tasks.Api.Controllers
             if (userRole == "Member" && existing.CreatedById != userId)
                 return Forbid("Você só pode editar tarefas que criou.");
 
-            existing.Title = updatedTask.Title;
-            existing.Description = updatedTask.Description;
-            existing.Status = updatedTask.Status;
-            existing.UpdatedAt = DateTime.UtcNow;
+            existing.Title = dto.Title;
+            existing.Description = dto.Description;
+            existing.Status = dto.Status;
 
             var result = await _taskService.UpdateAsync(existing);
-            return Ok(result);
+
+            //criar metodo ToReponse
+            var response = new TaskResponseDto
+            {
+                Id = result.Id,
+                Title = result.Title,
+                Description = result.Description,
+                Status = result.Status,
+                CreatedAt = result.CreatedAt,
+                UpdatedAt = result.UpdatedAt,
+                CreatedById = result.CreatedById
+            };
+            return Ok(response);
         }
 
         // DELETE /api/tasks/{id}

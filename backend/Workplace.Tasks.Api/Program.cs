@@ -5,19 +5,24 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Workplace.Tasks.Api.Validators;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Workplace.Tasks.Api.Middlewares;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<TaskCreateDtoValidator>());
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//conexão banco
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
-
 
 
 // Injeção de depencia
@@ -27,8 +32,6 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 
 // Configuração JWT
-
-
 var jwtKey = builder.Configuration["Jwt:Key"];
 var keyBytes = Encoding.ASCII.GetBytes(jwtKey);
 
@@ -51,7 +54,10 @@ builder.Services.AddAuthentication(options =>
 });
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+//tratar erros
+app.UseMiddleware<ErrorHandlingMiddleware>();
+
+// configure the http request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
