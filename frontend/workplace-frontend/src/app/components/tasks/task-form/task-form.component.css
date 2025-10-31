@@ -1,75 +1,32 @@
 .task-form-container {
-  max-width: 500px;
-  margin: 2rem auto;
-  background: #fff;
-  padding: 1.5rem 2rem;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.form-group {
-  margin-bottom: 1rem;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  margin-top: 40px;
 }
 
-label {
-  font-weight: 600;
-  margin-bottom: 0.25rem;
+mat-card {
+  width: 500px;
+  padding: 20px;
 }
 
-input,
-textarea,
-select {
-  padding: 0.5rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-textarea {
-  resize: vertical;
-  min-height: 80px;
+.full-width {
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 .actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 1.5rem;
+  margin-top: 15px;
 }
 
-button {
-  background-color: #007bff;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  color: white;
-  font-weight: 600;
-  border-radius: 4px;
-  cursor: pointer;
+.spinner {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
-
-button.cancel {
-  background-color: #6c757d;
-}
-
-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-.error {
-  color: #dc3545;
-  font-size: 0.9rem;
-  margin-top: 0.25rem;
-}
-
-.loading {
+.error-message {
+  color: red;
   text-align: center;
-  color: #007bff;
-  margin-top: 1rem;
+  margin-top: 10px;
 }

@@ -4,13 +4,30 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TaskService } from '../../../services/task.service';
 import { AuthService } from '../../../services/auth.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Task } from '../../../models/task/task.model';
 
 @Component({
   selector: 'app-task-form',
   standalone: true,
   templateUrl: './task-form.component.html',
   styleUrls: ['./task-form.component.css'],
-  imports: [CommonModule, ReactiveFormsModule]
+  imports: [CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatCardModule,
+    MatSelectModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule
+  ],
 })
 export class TaskFormComponent implements OnInit {
   form!: FormGroup;
@@ -23,8 +40,9 @@ export class TaskFormComponent implements OnInit {
     private fb: FormBuilder,
     private taskService: TaskService,
     private authService: AuthService,
-    public  router: Router,
-    private route: ActivatedRoute
+    public router: Router, //verificar se pode ser private
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -44,7 +62,7 @@ export class TaskFormComponent implements OnInit {
 
   loadTask(): void {
     if (!this.taskId) return;
-    this.loading = true;
+    this.loading = true; //enquanto verifica a tarefa
 
     this.taskService.getById(this.taskId).subscribe({
       next: (task) => {
@@ -52,8 +70,8 @@ export class TaskFormComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.error = err?.error?.message || 'Erro ao carregar tarefa.';
         this.loading = false;
+        this.snackBar.open('Erro ao carregar tarefa.', 'Fechar', { duration: 3000 });
       }
     });
   }
@@ -71,15 +89,26 @@ export class TaskFormComponent implements OnInit {
     request$.subscribe({
       next: () => {
         this.loading = false;
+        this.snackBar.open(
+          this.isEditMode ? 'Tarefa atualizada com sucesso!' : 'Tarefa criada com sucesso!',
+          'Fechar',
+          { duration: 3000 }
+        );
         this.router.navigate(['/tasks']);
       },
       error: (err) => {
-        this.error = err?.error?.message || 'Erro ao salvar tarefa.';
         this.loading = false;
-      }
+        const message = err?.error?.message || 'Erro ao salvar tarefa.';
+        this.snackBar.open(message, 'Fechar', { duration: 3000 });
+      },
     });
   }
 
+  
+  cancel(): void {
+    this.router.navigate(['/tasks']);
+  }
+    
   get title() {
     return this.form.get('title');
   }

@@ -63,11 +63,11 @@ export class TaskListComponent implements OnInit {
   }
 
   goToEdit(id: string) {
-    this.router.navigate(['/tasks', id]);
+    this.router.navigate(['/tasks/edit', id]);
   }
 
   goToCreate() {
-    this.router.navigate(['/tasks', 'create']);
+    this.router.navigate(['/tasks/new']);
   }
 
   deleteTask(id: string) {

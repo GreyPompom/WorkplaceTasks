@@ -1,38 +1,50 @@
 <div class="task-form-container">
-  <h2>{{ isEditMode ? 'Editar Tarefa' : 'Criar Nova Tarefa' }}</h2>
+  <mat-card>
+    <mat-card-title>{{ isEditMode ? 'Editar Tarefa' : 'Criar Nova Tarefa' }}</mat-card-title>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="title">Título</label>
-      <input id="title" type="text" formControlName="title" placeholder="Título da tarefa" />
-      <small *ngIf="title?.touched && title?.hasError('required')" class="error">O título é obrigatório.</small>
-      <small *ngIf="title?.hasError('maxlength')" class="error">Máximo de 250 caracteres.</small>
-    </div>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Título</mat-label>
+        <input matInput formControlName="title" placeholder="Título da tarefa" />
+        <mat-error *ngIf="title?.hasError('required')">O título é obrigatório.</mat-error>
+        <mat-error *ngIf="title?.hasError('maxlength')">Máximo de 250 caracteres.</mat-error>
+      </mat-form-field>
 
-    <div class="form-group">
-      <label for="description">Descrição</label>
-      <textarea id="description" formControlName="description" placeholder="Descrição (opcional)"></textarea>
-      <small *ngIf="description?.hasError('maxlength')" class="error">Máximo de 2000 caracteres.</small>
-    </div>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Descrição</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          placeholder="Descrição (opcional)"
+          rows="4"
+        ></textarea>
+        <mat-error *ngIf="description?.hasError('maxlength')">Máximo de 2000 caracteres.</mat-error>
+      </mat-form-field>
 
-    <div class="form-group">
-      <label for="status">Status</label>
-      <select id="status" formControlName="status">
-        <option value="Pending">Pendente</option>
-        <option value="InProgress">Em andamento</option>
-        <option value="Done">Concluída</option>
-      </select>
-    </div>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          <mat-option value="Pending">Pendente</mat-option>
+          <mat-option value="InProgress">Em andamento</mat-option>
+          <mat-option value="Done">Concluída</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-    <div class="actions">
-      <button type="submit" [disabled]="loading || form.invalid">
-        {{ isEditMode ? 'Salvar Alterações' : 'Criar Tarefa' }}
-      </button>
-      <button type="button" class="cancel" (click)="router.navigate(['/tasks'])">Cancelar</button>
-    </div>
+      <div class="actions">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="loading || form.invalid"
+        >
+          {{ isEditMode ? 'Salvar Alterações' : 'Criar Tarefa' }}
+        </button>
+        <button mat-button color="warn" type="button" (click)="cancel()">Cancelar</button>
+      </div>
 
-    <div *ngIf="error" class="error">{{ error }}</div>
-  </form>
-
-  <div *ngIf="loading" class="loading">Salvando...</div>
+      <div class="spinner" *ngIf="loading">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    </form>
+  </mat-card>
 </div>
