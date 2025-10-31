@@ -27,6 +27,17 @@ services:
     ports:
       - "8080:8080"
     restart: always
-
+  
+  frontend:
+      build:
+        context: ./frontend/workplace-frontend
+        dockerfile: Dockerfile
+      container_name: workplace_frontend
+      ports:
+        - "4200:4200"
+      depends_on:
+        - backend
+      restart: always
+      
 volumes:
   postgres_data:

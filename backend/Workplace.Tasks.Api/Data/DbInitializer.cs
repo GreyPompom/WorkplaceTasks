@@ -43,6 +43,39 @@ namespace Workplace.Tasks.Api.Data
 
             context.Users.AddRange(users);
             context.SaveChanges();
+            var tasks = new[]
+           {
+                new TaskEntity
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "Configuração inicial do sistema",
+                    Description = "Revisar ambiente e garantir funcionamento do backend.",
+                    Status = TaskStatus.InProgress,
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedById = admin.Id
+                },
+                new TaskEntity
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "Planejar sprints do projeto",
+                    Description = "Definir backlog e planejar as primeiras entregas.",
+                    Status = TaskStatus.Pending,
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedById = manager.Id
+                },
+                new TaskEntity
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "Criar mockups de interface",
+                    Description = "Desenhar telas iniciais para validação do design.",
+                    Status = TaskStatus.Pending,
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedById = member.Id
+                }
+            };
+
+            context.Tasks.AddRange(tasks);
+            context.SaveChanges();
         }
     }
 }
