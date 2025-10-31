@@ -1,0 +1,7 @@
+<ng-container *ngIf="isAuthenticated$ | async">
+  <app-navbar></app-navbar>
+</ng-container>
+
+<div [style.marginTop]="(isAuthenticated$ | async) ? '64px' : '0'">
+  <router-outlet></router-outlet>
+</div>

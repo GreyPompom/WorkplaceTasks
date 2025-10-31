@@ -26,13 +26,24 @@
         <small>Criado em: {{ task.createdAt | date:'short' }}</small>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-button color="primary" *ngIf="canEdit(task)" (click)="goToEdit(task.id)">
+        <button mat-button color="primary" 
+        *ngIf="canEdit(task)"
+        (click)="goToEdit(task.id)">
           <mat-icon>edit</mat-icon> Editar
         </button>
-        <button mat-button color="warn" *ngIf="canDelete(task)" (click)="deleteTask(task.id)">
+        <button mat-button color="warn"
+        *ngIf="canDelete(task)" 
+         (click)="deleteTask(task.id)">
           <mat-icon>delete</mat-icon> Excluir
         </button>
       </mat-card-actions>
     </mat-card>
   </div>
 </div>
+
+<!-- 
+ *appRole="['admin', 'manager']" 
+        [appRoleOwner]="task.createdById === this.userId" 
+        
+        *appRole="['admin']" 
+        [appRoleOwner]="task.createdById === this.userId" -->

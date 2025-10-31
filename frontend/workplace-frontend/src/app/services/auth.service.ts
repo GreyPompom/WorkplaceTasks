@@ -64,4 +64,11 @@ export class AuthService {
     if (!token || !user) return null;
     return { token, user: JSON.parse(user) };
   }
+
+  hasRole(roles: string[]): boolean {
+    const userRole = this.getUserRole();
+    return userRole ? roles.includes(userRole) : false;
+  } 
+
+  
 }

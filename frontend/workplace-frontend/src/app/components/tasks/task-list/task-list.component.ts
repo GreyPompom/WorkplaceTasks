@@ -5,11 +5,12 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
-
+import { MatToolbar } from '@angular/material/toolbar';
 import { TaskService } from '../../../services/task.service';
 import { AuthService } from '../../../services/auth.service';
 import { Task } from '../../../models/task/task.model';
-import { MatToolbar } from '@angular/material/toolbar';
+import { RoleDirective } from '../../../directives/role.directive';
+
 
 @Component({
   selector: 'app-task-list',
@@ -20,7 +21,8 @@ import { MatToolbar } from '@angular/material/toolbar';
     MatCardModule, 
     MatButtonModule, 
     MatProgressSpinnerModule, 
-    MatIconModule, MatToolbar]
+    MatIconModule, MatToolbar,
+    RoleDirective]
 })
 export class TaskListComponent implements OnInit {
   tasks: Task[] = [];
@@ -28,13 +30,13 @@ export class TaskListComponent implements OnInit {
   userRole: 'Admin' | 'Manager' | 'Member' | null = null;
   userId: string | null = null;
 
-    constructor(private taskService: TaskService, private auth: AuthService, private router: Router) {}
-
+  constructor(private taskService: TaskService, private auth: AuthService, private router: Router) {}
 
   ngOnInit(): void {
     this.userRole = this.auth.getUserRole();
     this.userId = this.auth.getUserId();
-
+    console.log('User Role:', this.userRole);
+    console.log('User ID:', this.userId);
     this.taskService.getAll().subscribe({
       next: (data) => {
         this.tasks = data;

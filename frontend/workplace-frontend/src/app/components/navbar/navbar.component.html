@@ -1,0 +1,23 @@
+<mat-toolbar color="primary" class="navbar">
+  <span class="navbar-title" color="warn">Workplace Tasks</span>
+
+  <span class="navbar-spacer"></span>
+
+  <ng-container *ngIf="user">
+    <span class="user-info">
+      <mat-icon>person</mat-icon>
+      {{ user.name }} ({{ user.role }})
+    </span>
+
+    <button
+      mat-button
+      class="admin-btn"
+    >
+      Painel de Admin
+    </button>
+
+    <button mat-icon-button color="accent" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </ng-container>
+</mat-toolbar>

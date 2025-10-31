@@ -5,7 +5,6 @@ using Workplace.Tasks.Api.Models.Enum;
 
 namespace Workplace.Tasks.Api.Models
 {
- 
     public class TaskEntity
     {
         [Key]
