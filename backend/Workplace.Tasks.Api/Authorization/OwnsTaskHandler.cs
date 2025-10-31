@@ -46,7 +46,7 @@ namespace Workplace.Tasks.Api.Authorization
             using var scope = _scopeFactory.CreateScope();
             var taskService = scope.ServiceProvider.GetRequiredService<ITaskService>();
             var task = await taskService.GetByIdAsync(taskId);
-
+            var method = httpContext.Request.Method.ToUpperInvariant();
             if (task == null)
                 return;
 
@@ -56,20 +56,29 @@ namespace Workplace.Tasks.Api.Authorization
                 context.Succeed(requirement);
                 return;
             }
-
-            //  manager pode editar/deletar apenas próprias
-            if (context.User.IsInRole("Manager") && task.CreatedById == userId)
+            // manager pode editar qualquer yask
+            if (context.User.IsInRole("Manager") && method == "PUT")
             {
                 context.Succeed(requirement);
                 return;
             }
-
-            // member idem
-            if (context.User.IsInRole("Member") && task.CreatedById == userId)
+            //manager pode deletar apenas as propeias tasks
+            if (context.User.IsInRole("Manager") && method == "DELETE" && task.CreatedById == userId)
             {
                 context.Succeed(requirement);
                 return;
+            }
+            //member pode editar e deletar so as proprias tasls
+            if (context.User.IsInRole("Member") && task.CreatedById == userId)
+            {
+                context.Succeed(requirement);
             }
         }
     }
 }
+
+//Melhoria policies compostas ver se é mais valido
+//options.AddPolicy("CanCreate", policy => policy.RequireRole("Admin", "Manager", "Member"));
+//options.AddPolicy("CanRead", policy => policy.RequireRole("Admin", "Manager", "Member"));
+//options.AddPolicy("CanEditOwn", policy => policy.Requirements.Add(new OwnsTaskRequirement()));
+//options.AddPolicy("CanDeleteOwn", policy => policy.Requirements.Add(new OwnsTaskRequirement()));

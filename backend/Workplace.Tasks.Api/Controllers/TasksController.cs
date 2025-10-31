@@ -29,7 +29,7 @@ namespace Workplace.Tasks.Api.Controllers
 
         // GET /api/tasks - Regra: Todos (Admin, Manager, Member) podem listar
         [HttpGet]
-        [Authorize(Policy = "ManagerPolicy")]
+        [Authorize(Policy = "MemberPolicy")]
         public async Task<IActionResult> GetAll()
         {
             var tasks = await _taskService.GetAllAsync();
@@ -48,7 +48,7 @@ namespace Workplace.Tasks.Api.Controllers
 
         // GET /api/tasks/{id}  - Regra: Todos (Admin, Manager, Member) podem listar
         [HttpGet("{id:guid}")] 
-        [Authorize(Policy = "ManagerPolicy")] 
+        [Authorize(Policy = "MemberPolicy")] 
         public async Task<IActionResult> GetById(Guid id)
         {
             var task = await _taskService.GetByIdAsync(id)
@@ -59,7 +59,7 @@ namespace Workplace.Tasks.Api.Controllers
 
         // POST /api/tasks - todos
         [HttpPost]
-        [Authorize(Policy = "ManagerPolicy")]
+        [Authorize(Policy = "MemberPolicy")]
         public async Task<IActionResult> Create([FromBody] TaskCreateDto dto)
         {
             var userId = GetUserId();
@@ -143,7 +143,5 @@ namespace Workplace.Tasks.Api.Controllers
             await _taskService.DeleteAsync(id);
             return NoContent();
         }
-
-        
     }
 }

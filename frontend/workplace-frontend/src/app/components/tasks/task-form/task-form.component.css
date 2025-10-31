@@ -1,0 +1,32 @@
+.task-form-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+mat-card {
+  width: 500px;
+  padding: 20px;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.spinner {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.error-message {
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+}

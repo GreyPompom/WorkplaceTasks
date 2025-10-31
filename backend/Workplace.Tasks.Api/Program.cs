@@ -17,6 +17,15 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular",
+        policy => policy
+            .WithOrigins("http://localhost:4200") // front
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
+});
 builder.Services.AddControllers()
     .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Program>());
 
@@ -125,7 +134,7 @@ builder.Services.AddAuthorization(options =>
 
     // member crud apenas próprios
     options.AddPolicy("MemberPolicy", policy =>
-        policy.RequireRole("Member"));
+        policy.RequireRole("Admin", "Manager", "Member"));
 
     //  usada junto com outros policies
     options.AddPolicy("OwnsTask", policy =>
@@ -163,6 +172,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowAngular");
 app.UseModelStateValidation();
 app.UseAuthentication();
 app.UseAuthorization();

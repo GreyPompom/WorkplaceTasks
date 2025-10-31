@@ -1,0 +1,36 @@
+.task-container {
+  padding: 20px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.task-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.no-tasks {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 1.2em;
+  color: gray;
+}
+
+.task-card {
+  padding: 10px;
+}
+.task-card.completed {
+  background-color: #e0e0e0;
+  text-decoration: line-through;
+  color: #888;
+}

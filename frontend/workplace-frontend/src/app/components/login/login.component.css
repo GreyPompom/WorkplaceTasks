@@ -1,0 +1,35 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+mat-card {
+  width: 380px;
+  padding: 20px;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+}
+.error {
+  color: red;
+  margin-top: 10px;
+  font-size: 13px;
+}
+input.ng-invalid.ng-touched {
+  border-color: #e74c3c;
+}
+
+mat-card {
+  width: 380px;
+  padding: 20px;
+}

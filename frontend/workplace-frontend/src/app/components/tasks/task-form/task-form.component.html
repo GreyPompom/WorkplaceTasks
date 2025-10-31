@@ -1,0 +1,50 @@
+<div class="task-form-container">
+  <mat-card>
+    <mat-card-title>{{ isEditMode ? 'Editar Tarefa' : 'Criar Nova Tarefa' }}</mat-card-title>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Título</mat-label>
+        <input matInput formControlName="title" placeholder="Título da tarefa" />
+        <mat-error *ngIf="title?.hasError('required')">O título é obrigatório.</mat-error>
+        <mat-error *ngIf="title?.hasError('maxlength')">Máximo de 250 caracteres.</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Descrição</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          placeholder="Descrição (opcional)"
+          rows="4"
+        ></textarea>
+        <mat-error *ngIf="description?.hasError('maxlength')">Máximo de 2000 caracteres.</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          <mat-option value="Pending">Pendente</mat-option>
+          <mat-option value="InProgress">Em andamento</mat-option>
+          <mat-option value="Done">Concluída</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="actions">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="loading || form.invalid"
+        >
+          {{ isEditMode ? 'Salvar Alterações' : 'Criar Tarefa' }}
+        </button>
+        <button mat-button color="warn" type="button" (click)="cancel()">Cancelar</button>
+      </div>
+
+      <div class="spinner" *ngIf="loading">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    </form>
+  </mat-card>
+</div>
