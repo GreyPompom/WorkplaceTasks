@@ -1,1 +1,16 @@
-<p>task-list works!</p>
+<div *ngIf="loading">Carregando tarefas...</div>
+
+<div *ngIf="!loading && tasks.length === 0">Nenhuma tarefa encontrada.</div>
+
+<div *ngIf="!loading && tasks.length > 0" class="task-grid">
+  <div *ngFor="let task of tasks" class="task-card">
+    <h3>{{ task.title }}</h3>
+    <p>{{ task.description }}</p>
+    <p><strong>Status:</strong> {{ task.status }}</p>
+
+    <div class="actions">
+      <button *ngIf="canEdit(task)">Editar</button>
+      <button *ngIf="canDelete(task)" (click)="deleteTask(task.id)">Excluir</button>
+    </div>
+  </div>
+</div>

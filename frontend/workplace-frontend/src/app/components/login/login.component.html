@@ -1,1 +1,23 @@
-<p>login works!</p>
+<div class="login-container">
+  <h2>Entrar</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div>
+      <label>Email</label>
+      <input type="email" formControlName="email" />
+      <small *ngIf="hasError('email', 'required')" class="error">Email é obrigatório.</small>
+      <small *ngIf="hasError('email', 'email')" class="error">Formato de email inválido.</small>
+    </div>
+
+    <div>
+      <label>Senha</label>
+      <input type="password" formControlName="password" />
+      <small *ngIf="hasError('password', 'required')" class="error">Senha é obrigatória.</small>
+      <small *ngIf="hasError('password', 'minlength')" class="error">Mínimo de 6 caracteres.</small>
+    </div>
+
+    <button type="submit" [disabled]="loading || form.invalid">Entrar</button>
+
+    <div *ngIf="error" class="error">{{ error }}</div>
+  </form>
+</div>
