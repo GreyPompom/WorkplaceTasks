@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Workplace.Tasks.Api.Models.Enum;
 using Workplace.Tasks.Api.Models;
 using Workplace.Tasks.Api.Data;
 using BCrypt.Net;
@@ -11,38 +12,38 @@ namespace Workplace.Tasks.Api.Data
         public static void Seed(ApplicationDbContext context)
         {
             if (context.Users.Any())
-                return; 
+                return;
 
-            var users = new[]
+            var admin = new User
             {
-                new User
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Admin User",
-                    Email = "admin@example.com",
-                    Role = "Admin",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Password123!")
-                },
-                new User
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Manager User",
-                    Email = "manager@example.com",
-                    Role = "Manager",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Password123!")
-                },
-                new User
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Member User",
-                    Email = "member@example.com",
-                    Role = "Member",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Password123!")
-                }
+                Id = Guid.NewGuid(),
+                Name = "Admin User",
+                Email = "admin@example.com",
+                Role = "Admin",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Password123!")
             };
 
-            context.Users.AddRange(users);
+            var manager = new User
+            {
+                Id = Guid.NewGuid(),
+                Name = "Manager User",
+                Email = "manager@example.com",
+                Role = "Manager",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Password123!")
+            };
+
+            var member = new User
+            {
+                Id = Guid.NewGuid(),
+                Name = "Member User",
+                Email = "member@example.com",
+                Role = "Member",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Password123!")
+            };
+
+            context.Users.AddRange(admin, manager, member);
             context.SaveChanges();
+
             var tasks = new[]
            {
                 new TaskEntity
@@ -50,7 +51,7 @@ namespace Workplace.Tasks.Api.Data
                     Id = Guid.NewGuid(),
                     Title = "Configuração inicial do sistema",
                     Description = "Revisar ambiente e garantir funcionamento do backend.",
-                    Status = TaskStatus.InProgress,
+                    Status = EnumTaskStatus.InProgress,
                     CreatedAt = DateTime.UtcNow,
                     CreatedById = admin.Id
                 },
@@ -59,7 +60,7 @@ namespace Workplace.Tasks.Api.Data
                     Id = Guid.NewGuid(),
                     Title = "Planejar sprints do projeto",
                     Description = "Definir backlog e planejar as primeiras entregas.",
-                    Status = TaskStatus.Pending,
+                    Status = EnumTaskStatus.Pending,
                     CreatedAt = DateTime.UtcNow,
                     CreatedById = manager.Id
                 },
@@ -68,7 +69,7 @@ namespace Workplace.Tasks.Api.Data
                     Id = Guid.NewGuid(),
                     Title = "Criar mockups de interface",
                     Description = "Desenhar telas iniciais para validação do design.",
-                    Status = TaskStatus.Pending,
+                    Status = EnumTaskStatus.Pending,
                     CreatedAt = DateTime.UtcNow,
                     CreatedById = member.Id
                 }
