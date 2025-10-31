@@ -134,7 +134,7 @@ builder.Services.AddAuthorization(options =>
 
     // member crud apenas próprios
     options.AddPolicy("MemberPolicy", policy =>
-        policy.RequireRole("Member"));
+        policy.RequireRole("Admin", "Manager", "Member"));
 
     //  usada junto com outros policies
     options.AddPolicy("OwnsTask", policy =>
