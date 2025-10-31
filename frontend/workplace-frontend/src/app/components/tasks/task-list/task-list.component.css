@@ -1,22 +1,36 @@
-.task-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 16px;
+.task-container {
   padding: 20px;
 }
-.task-card {
-  background: #fff;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 0 5px #eee;
+
+.spacer {
+  flex: 1 1 auto;
 }
-.actions {
+
+.task-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.loading {
   display: flex;
-  gap: 10px;
-  margin-top: 10px;
+  justify-content: center;
+  margin-top: 50px;
 }
-.completed {
-  text-decoration: line-through;
+
+.no-tasks {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 1.2em;
   color: gray;
+}
+
+.task-card {
+  padding: 10px;
+}
+.task-card.completed {
+  background-color: #e0e0e0;
+  text-decoration: line-through;
+  color: #888;
 }

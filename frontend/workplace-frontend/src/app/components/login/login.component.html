@@ -1,23 +1,26 @@
 <div class="login-container">
-  <h2>Entrar</h2>
+  <mat-card>
+    <mat-card-title>Entrar</mat-card-title>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" />
+        <mat-error *ngIf="hasError('email', 'required')">Campo obrigatório</mat-error>
+        <mat-error *ngIf="hasError('email', 'email')">Email inválido</mat-error>
+      </mat-form-field>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div>
-      <label>Email</label>
-      <input type="email" formControlName="email" />
-      <small *ngIf="hasError('email', 'required')" class="error">Email é obrigatório.</small>
-      <small *ngIf="hasError('email', 'email')" class="error">Formato de email inválido.</small>
-    </div>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Senha</mat-label>
+        <input matInput type="password" formControlName="password" />
+        <mat-error *ngIf="hasError('password', 'required')">Campo obrigatório</mat-error>
+        <mat-error *ngIf="hasError('password', 'minlength')">Mínimo 6 caracteres</mat-error>
+      </mat-form-field>
 
-    <div>
-      <label>Senha</label>
-      <input type="password" formControlName="password" />
-      <small *ngIf="hasError('password', 'required')" class="error">Senha é obrigatória.</small>
-      <small *ngIf="hasError('password', 'minlength')" class="error">Mínimo de 6 caracteres.</small>
-    </div>
-
-    <button type="submit" [disabled]="loading || form.invalid">Entrar</button>
+      <button mat-raised-button color="primary" class="full-width" type="submit">
+        Entrar
+      </button>
+    </form>
 
     <div *ngIf="error" class="error">{{ error }}</div>
-  </form>
+  </mat-card>
 </div>

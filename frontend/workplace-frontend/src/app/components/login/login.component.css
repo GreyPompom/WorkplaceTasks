@@ -1,10 +1,24 @@
 .login-container {
-  width: 320px;
-  margin: 80px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+mat-card {
+  width: 380px;
   padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 0 5px #ccc;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-top: 10px;
 }
 .error {
   color: red;
@@ -13,4 +27,9 @@
 }
 input.ng-invalid.ng-touched {
   border-color: #e74c3c;
+}
+
+mat-card {
+  width: 380px;
+  padding: 20px;
 }

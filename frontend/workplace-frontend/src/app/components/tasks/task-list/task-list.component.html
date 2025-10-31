@@ -1,16 +1,38 @@
-<div *ngIf="loading">Carregando tarefas...</div>
+<div class="task-container">
+  <mat-toolbar color="primary">
+    <span>Lista de Tarefas</span>
+    <span class="spacer"></span>
+    <button mat-raised-button color="accent" (click)="goToCreate()">
+      <mat-icon>add</mat-icon> Nova Tarefa
+    </button>
+  </mat-toolbar>
 
-<div *ngIf="!loading && tasks.length === 0">Nenhuma tarefa encontrada.</div>
+  <div *ngIf="loading" class="loading">
+    <mat-spinner></mat-spinner>
+  </div>
 
-<div *ngIf="!loading && tasks.length > 0" class="task-grid">
-  <div *ngFor="let task of tasks" class="task-card">
-    <h3>{{ task.title }}</h3>
-    <p>{{ task.description }}</p>
-    <p><strong>Status:</strong> {{ task.status }}</p>
+  <div *ngIf="!loading && tasks.length === 0" class="no-tasks">
+    Nenhuma tarefa encontrada.
+  </div>
 
-    <div class="actions">
-      <button *ngIf="canEdit(task)">Editar</button>
-      <button *ngIf="canDelete(task)" (click)="deleteTask(task.id)">Excluir</button>
-    </div>
+  <div class="task-grid" *ngIf="!loading && tasks.length > 0">
+    <mat-card *ngFor="let task of tasks" class="task-card">
+      <mat-card-header>
+        <mat-card-title>{{ task.title }}</mat-card-title>
+        <mat-card-subtitle>{{ task.status }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ task.description }}</p>
+        <small>Criado em: {{ task.createdAt | date:'short' }}</small>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary" *ngIf="canEdit(task)" (click)="goToEdit(task.id)">
+          <mat-icon>edit</mat-icon> Editar
+        </button>
+        <button mat-button color="warn" *ngIf="canDelete(task)" (click)="deleteTask(task.id)">
+          <mat-icon>delete</mat-icon> Excluir
+        </button>
+      </mat-card-actions>
+    </mat-card>
   </div>
 </div>
