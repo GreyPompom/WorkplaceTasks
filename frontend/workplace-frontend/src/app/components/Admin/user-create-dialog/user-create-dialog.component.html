@@ -1,0 +1,53 @@
+
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field appearance="fill">
+      <mat-label>Nome</mat-label>
+      <input matInput formControlName="name" />
+      <mat-error *ngIf="form.get('name')?.hasError('required')">
+        Nome é obrigatório.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" />
+      <mat-error *ngIf="form.get('email')?.hasError('required')">
+        Email é obrigatório.
+      </mat-error>
+      <mat-error *ngIf="form.get('email')?.hasError('email')">
+        Formato de email inválido.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Senha</mat-label>
+      <input matInput type="password" formControlName="password" />
+      <mat-error *ngIf="form.get('password')?.hasError('required')">
+        Senha é obrigatória.
+      </mat-error>
+      <mat-error *ngIf="form.get('password')?.hasError('minlength')">
+        A senha deve ter pelo menos 6 caracteres.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Função</mat-label>
+      <mat-select formControlName="role">
+        <mat-option value="Admin">Admin</mat-option>
+        <mat-option value="Manager">Manager</mat-option>
+        <mat-option value="Member">Member</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div *ngIf="error" class="error">{{ error }}</div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button color="warn" (click)="close()">Cancelar</button>
+  <button mat-raised-button color="primary" [disabled]="form.invalid || loading" (click)="onSubmit()">
+    <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+    <span *ngIf="!loading">Criar</span>
+  </button>
+</mat-dialog-actions>

@@ -83,6 +83,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Injeção de depencia
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IAuthorizationHandler, OwnsTaskHandler>();

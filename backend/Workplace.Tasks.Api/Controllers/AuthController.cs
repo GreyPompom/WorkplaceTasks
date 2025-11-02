@@ -7,7 +7,7 @@ using System.Text;
 using Workplace.Tasks.Api.Models;
 using Workplace.Tasks.Api.Services;
 using Workplace.Tasks.Api.DTOs.Auth;
-using Workplace.Tasks.Api.DTOs;
+using Workplace.Tasks.Api.DTOs.User;
 
 namespace Workplace.Tasks.Api.Controllers
 {
@@ -58,7 +58,7 @@ namespace Workplace.Tasks.Api.Controllers
                 var response = new AuthResponseDto
                 {
                     Token = jwt,
-                    User = new UserDto
+                    User = new UserDTO
                     {
                         Id = user.Id,
                         Name = user.Name,
@@ -112,7 +112,7 @@ namespace Workplace.Tasks.Api.Controllers
                 var response = new AuthResponseDto
                 {
                     Token = jwt,
-                    User = new UserDto
+                    User = new UserDTO
                     {
                         Id = user.Id,
                         Name = user.Name,

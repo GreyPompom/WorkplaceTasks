@@ -1,7 +1,15 @@
 <mat-toolbar *ngIf="isAuthenticated()"  color="primary" class="navbar">
   <span class="navbar-title" color="warn">Workplace Tasks</span>
 
-  <span class="navbar-spacer"></span>
+   <button mat-button (click)="goToTasks()">
+    <mat-icon>assignment</mat-icon> Tarefas
+  </button>
+
+  <!-- Visível apenas para Admin -->
+  <button *ngIf="isAdmin()" mat-button (click)="goToUsers()">
+    <mat-icon>group</mat-icon> Usuários
+  </button>
+
 
   <ng-container *ngIf="user">
     <span class="user-info">
