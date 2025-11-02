@@ -200,6 +200,15 @@ Cada usuário possui uma tarefa criada automaticamente.
 | `PUT` | `/api/tasks/{id}` | Atualiza tarefa (respeitando role) |
 | `DELETE` | `/api/tasks/{id}` | Exclui tarefa (respeitando role) |
 
+### 👤 Usuários (apenas Admin)
+| Método     | Rota              | Descrição                                                                        | Permissão |
+| :--------- | :---------------- | :------------------------------------------------------------------------------- | :-------- |
+| `GET`      | `/api/users`      | Lista todos os usuários cadastrados no sistema.                                  | Admin     |
+| `GET`      | `/api/users/{id}` | Retorna os detalhes de um usuário específico.                                    | Admin     |
+|  `POST`    | `/api/users`      | Cria um novo usuário informando nome, e-mail, senha e role.                      | Admin     |
+| `PUT`      | `/api/users/{id}` | Atualiza informações de um usuário existente ou altera sua role (exceto Admins). | Admin     |
+| `DELETE`   | `/api/users/{id}` | Remove um usuário do sistema (exceto Admins).                                    | Admin     |
+
 ---
 
 ## 🔑 Autenticação via JWT
