@@ -54,7 +54,17 @@ namespace Workplace.Tasks.Api.Controllers
             var task = await _taskService.GetByIdAsync(id)
                        ?? throw new KeyNotFoundException("Tarefa não encontrada.");
 
-            return Ok(task);
+            var response = new TaskResponseDto
+            {
+                Id = task.Id,
+                Title = task.Title,
+                Description = task.Description,
+                Status = task.Status,
+                CreatedAt = task.CreatedAt,
+                UpdatedAt = task.UpdatedAt,
+                CreatedById = task.CreatedById
+            };
+            return Ok(response);
         }
 
         // POST /api/tasks - todos
