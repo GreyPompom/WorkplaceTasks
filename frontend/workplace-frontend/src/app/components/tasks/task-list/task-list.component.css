@@ -1,5 +1,16 @@
 .task-container {
-  padding: 20px;
+   padding: 2rem;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.status-filter {
+  width: 250px;
 }
 
 .spacer {
@@ -9,7 +20,7 @@
 .task-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 15px;
+  gap:  1rem;
   margin-top: 20px;
 }
 
@@ -28,9 +39,31 @@
 
 .task-card {
   padding: 10px;
+  transition: transform 0.2s ease;
 }
-.task-card.completed {
-  background-color: #e0e0e0;
-  text-decoration: line-through;
-  color: #888;
+
+.task-card:hover {
+  transform: scale(1.02);
+}
+
+.status-pending {
+  background-color: #004272; /* azul claro */
+  border-left: 5px solid #2196f3;
+}
+
+.status-progress {
+  background-color: #b36f03; /* laranja claro */
+  border-left: 5px solid #fb8c00;
+}
+
+.status-done {
+  background-color: #025209; /* verde claro */
+  border-left: 5px solid #43a047;
+}
+
+
+.mat-paginator {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
 }

@@ -36,5 +36,10 @@ export class AppComponent {
   get showNavbar(): boolean {
     return this.currentUrl !== '/login' && !!this.authService.getUser();
   }
+   ngOnInit(): void {
+    if (!this.authService.isAuthenticated()) {
+      this.authService.logout();
+    }
+  }
 }
 //Componente raiz que utiliza RouterOutlet para renderizar componentes baseados na rota atual.

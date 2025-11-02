@@ -29,4 +29,9 @@ export class NavbarComponent implements OnInit {
   get isAdmin(): boolean {
     return this.user?.role === 'Admin';
   }
+
+  isAuthenticated(){
+    return this.authService.isAuthenticated();
+  }
+  
 }
