@@ -172,7 +172,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection(); não necessario em ambiente de teste local
 app.UseCors("AllowAngular");
 app.UseModelStateValidation();
 app.UseAuthentication();

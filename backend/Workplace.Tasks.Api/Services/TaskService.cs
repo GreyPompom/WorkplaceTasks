@@ -1,3 +1,4 @@
+using Workplace.Tasks.Api.DTOs;
 using Workplace.Tasks.Api.Models;
 using Workplace.Tasks.Api.Repositories;
 
@@ -38,6 +39,20 @@ namespace Workplace.Tasks.Api.Services
         public async Task DeleteAsync(Guid id)
         {
             await _taskRepository.DeleteAsync(id);
+        }
+
+        //paginação
+        public async Task<PagedResponseDto<TaskEntity>> GetPagedAsync(TaskFilterDto filter)
+        {
+            var (items, totalCount) = await _taskRepository.GetPagedAsync(filter.Status, filter.PageNumber, filter.PageSize);
+
+            return new PagedResponseDto<TaskEntity>
+            {
+                Items = items,
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize,
+                TotalCount = totalCount
+            };
         }
     }
 }
