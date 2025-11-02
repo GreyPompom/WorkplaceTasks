@@ -4,15 +4,29 @@ import { TaskListComponent } from './components/tasks/task-list/task-list.compon
 import { TaskFormComponent } from './components/tasks/task-form/task-form.component';
 import { authGuard  } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
+import { UserListComponent } from './components/Admin/user-list/user-list.component';
 
 export const routes: Routes = [
-{ path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
+    { path: '', redirectTo: 'login', pathMatch: 'full' },
+    { path: 'login', component: LoginComponent },
 
-  // Área protegida
-  { path: 'tasks', component: TaskListComponent, canActivate: [authGuard] },
-  { path: 'tasks/new', component: TaskFormComponent, canActivate: [authGuard, roleGuard(['Admin', 'Manager', 'Member'])] },
-  { path: 'tasks/edit/:id', component: TaskFormComponent, canActivate: [authGuard, roleGuard(['Admin', 'Manager', 'Member'])] },
-
-  { path: '**', redirectTo: 'login' }
+    // autenticados e liberado para todas roles
+    {
+        path: 'tasks',
+        canActivate: [authGuard, roleGuard(['Admin', 'Manager', 'Member'])] ,
+        children: [
+        { path: '', component: TaskListComponent },
+        { path: 'create', component: TaskFormComponent },
+        { path: ':id/edit', component: TaskFormComponent }
+        ]
+    },
+    // apenas para Admin
+     {
+    path: 'admin',
+    canActivate: [authGuard, authGuard],
+    children: [
+      { path: 'users', component: UserListComponent }
+    ]
+  },
+    { path: '**', redirectTo: 'login' }
 ];

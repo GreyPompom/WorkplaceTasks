@@ -1,0 +1,49 @@
+ .filter-form,
+  .create-form {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  mat-form-field {
+    width: 200px;
+  }
+
+  table {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .spinner-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 1000;
+}
+
+.snack-success {
+  background-color: #43a047 !important; 
+  color: #fff !important;
+}
+
+.snack-error {
+  background-color: #e53935 !important; 
+  color: #fff !important;
+}
+
+mat-card {
+  padding: 20px;
+  position: relative;
+}
+
+.filter-form,
+.create-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}

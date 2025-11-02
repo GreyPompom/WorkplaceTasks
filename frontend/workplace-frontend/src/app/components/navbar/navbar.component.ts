@@ -26,11 +26,17 @@ export class NavbarComponent implements OnInit {
     this.authService.logout();
   }
 
-  get isAdmin(): boolean {
+  isAdmin(): boolean {
     return this.user?.role === 'Admin';
   }
+  goToTasks(): void {
+    this.router.navigate(['/tasks']);
+  }
+  goToUsers(): void {
+    this.router.navigate(['/admin/users']);
+  }
 
-  isAuthenticated(){
+  isAuthenticated(): boolean {
     return this.authService.isAuthenticated();
   }
   
