@@ -1,6 +1,6 @@
 # 🧩 Workplace Tasks – Gestão de Tarefas com RBAC
 
-Um sistema completo de **gestão de tarefas** desenvolvido em **.NET 8 (C#)** com **PostgreSQL** e **Angular 17**, implementando **autenticação JWT**, **autorização baseada em roles (RBAC)** e **políticas com AuthorizationHandler**.  
+Um sistema completo de **gestão de tarefas** desenvolvido em **.NET 8 (C#)** com **PostgreSQL** e **Angular 19**, implementando **autenticação JWT**, **autorização baseada em roles (RBAC)** e **políticas com AuthorizationHandler**.  
 O projeto também inclui **Docker Compose** para orquestração de containers do backend, banco e frontend.
 
 ---
@@ -30,7 +30,7 @@ O projeto também inclui **Docker Compose** para orquestração de containers do
 
 ### 💻 Frontend
 - **Node.js 20+**
-- **Angular CLI 17+**
+- **Angular CLI 19+**
 - **Docker Desktop**
 
 ---
@@ -94,7 +94,7 @@ Definida em `appsettings.json`:
 ### 🐘 Banco de dados
 O banco PostgreSQL é configurado via connection string:
 ```
-Host=postgres;Port=5432;Database=workplace;Username=postgres;Password=358017
+Host=postgres;Port=5432;Database=workplace;Username=postgres;Password=postgres
 ```
 
 ### 🧠 Inicialização
@@ -231,8 +231,3 @@ ng serve --open
 ```
 
 ---
-
-## 💬 Créditos
-
-Desenvolvido por **Emely Santos (GreyPompom)**  
-💻 Full Stack Developer — .NET | Angular | React | PostgreSQL  
