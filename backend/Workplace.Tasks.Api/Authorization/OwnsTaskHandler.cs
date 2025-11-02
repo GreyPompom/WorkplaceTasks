@@ -72,6 +72,7 @@ namespace Workplace.Tasks.Api.Authorization
             if (context.User.IsInRole("Member") && task.CreatedById == userId)
             {
                 context.Succeed(requirement);
+                return;
             }
         }
     }
