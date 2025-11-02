@@ -9,5 +9,7 @@ namespace Workplace.Tasks.Api.Repositories
         Task<TaskEntity> AddAsync(TaskEntity task);
         Task<TaskEntity> UpdateAsync(TaskEntity task);
         Task DeleteAsync(Guid id);
+        Task<(IEnumerable<TaskEntity> Items, int TotalCount)> GetPagedAsync(string? status, int pageNumber, int pageSize);
+
     }
 }

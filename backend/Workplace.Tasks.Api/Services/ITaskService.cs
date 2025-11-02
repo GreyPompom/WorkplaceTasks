@@ -1,4 +1,5 @@
-﻿using Workplace.Tasks.Api.Models;
+﻿using Workplace.Tasks.Api.DTOs;
+using Workplace.Tasks.Api.Models;
 
 namespace Workplace.Tasks.Api.Services
 {
@@ -9,5 +10,9 @@ namespace Workplace.Tasks.Api.Services
         Task<TaskEntity> CreateAsync(TaskEntity task);
         Task<TaskEntity> UpdateAsync(TaskEntity task);
         Task DeleteAsync(Guid id);
+
+        //paginação
+        Task<PagedResponseDto<TaskEntity>> GetPagedAsync(TaskFilterDto filter);
+
     }
 }

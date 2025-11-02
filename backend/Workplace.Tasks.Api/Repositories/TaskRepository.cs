@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Workplace.Tasks.Api.Data;
 using Workplace.Tasks.Api.Models;
+using Workplace.Tasks.Api.Models.Enum;
 
 namespace Workplace.Tasks.Api.Repositories
 {
@@ -45,6 +46,27 @@ namespace Workplace.Tasks.Api.Repositories
                 _context.Tasks.Remove(existing);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<(IEnumerable<TaskEntity> Items, int TotalCount)> GetPagedAsync(string? status, int pageNumber, int pageSize)
+        {
+            var query = _context.Tasks.AsQueryable();
+            if (!string.IsNullOrEmpty(status) && Enum.TryParse<EnumTaskStatus>(status, true, out var parsedStatus))
+            {
+                query = query.Where(t => t.Status == parsedStatus);
+            } //esse so funciona para banco postgress
+
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(t => t.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return (items, totalCount);
         }
     }
 }

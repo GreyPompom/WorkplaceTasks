@@ -143,5 +143,30 @@ namespace Workplace.Tasks.Api.Controllers
             await _taskService.DeleteAsync(id);
             return NoContent();
         }
+
+        [HttpGet("paged")]
+        [Authorize(Policy = "MemberPolicy")]
+        public async Task<IActionResult> GetPaged([FromQuery] TaskFilterDto filter)
+        {
+            var result = await _taskService.GetPagedAsync(filter);
+            var response = new PagedResponseDto<TaskResponseDto>
+            {
+                Items = result.Items.Select(task => new TaskResponseDto
+                {
+                    Id = task.Id,
+                    Title = task.Title,
+                    Description = task.Description,
+                    Status = task.Status,
+                    CreatedAt = task.CreatedAt,
+                    UpdatedAt = task.UpdatedAt,
+                    CreatedById = task.CreatedById
+                }),
+                PageNumber = result.PageNumber,
+                PageSize = result.PageSize,
+                TotalCount = result.TotalCount
+            };
+            return Ok(response);
+        }
+
     }
 }

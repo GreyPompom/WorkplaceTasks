@@ -6,7 +6,7 @@ services:
     container_name: workplace_postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 358017
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: workplace
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -20,7 +20,7 @@ services:
     container_name: workplace_backend
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__Default: "Host=postgres;Port=5432;Database=workplace;Username=postgres;Password=358017"
+      ConnectionStrings__Default: "Host=postgres;Port=5432;Database=workplace;Username=postgres;Password=postgres"
       Jwt__Key: "f2E4n9R6x8B3p1T7z5U2a0K4w6M8r3Y9"
     depends_on:
       - postgres
