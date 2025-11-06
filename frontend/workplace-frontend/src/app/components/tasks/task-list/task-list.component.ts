@@ -88,7 +88,7 @@ export class TaskListComponent implements OnInit {
   }
 
   goToCreate() {
-    this.router.navigate(['/tasks/new']);
+    this.router.navigate(['/tasks/create']);
   }
 
   deleteTask(id: string) {

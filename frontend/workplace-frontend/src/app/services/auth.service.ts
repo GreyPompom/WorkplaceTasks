@@ -37,8 +37,9 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    const token = localStorage.getItem('token');
-    return token != null && !this.jwtHelper.isTokenExpired(token);
+    const token = this.getToken();
+    if (!token) return false;
+    return !this.jwtHelper.isTokenExpired(token);
   }
 
   getToken(): string | null {
@@ -51,7 +52,8 @@ export class AuthService {
   }
 
   getUserRole(): 'Admin' | 'Manager' | 'Member' | null {
-    return this.getUser()?.role ?? null;
+     const user = localStorage.getItem('user');
+    return user ? JSON.parse(user).role : null;
   }
 
   getUserId(): string | null {
