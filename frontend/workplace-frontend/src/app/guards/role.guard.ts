@@ -7,7 +7,14 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
     const authService = inject(AuthService);
     const router = inject(Router);
 
+    const token = authService.getToken();
     const userRole = authService.getUserRole();
+    if (!token || !authService.isAuthenticated()) {
+      authService.logout();
+      router.navigate(['/login']);
+      return false;
+    }
+
     if (userRole && allowedRoles.includes(userRole)) {
       return true;
     }
